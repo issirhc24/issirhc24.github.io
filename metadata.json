@@ -1,0 +1,6 @@
+{
+  "name": "Pokemon Happy Birthday Surprise",
+  "description": "A cute, interactive Pokémon-themed birthday surprise featuring a magical Poké Ball opening, animated handwritten letter with peeking Gardevoir, dramatic Mega Evolution sequence, and grand birthday celebration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

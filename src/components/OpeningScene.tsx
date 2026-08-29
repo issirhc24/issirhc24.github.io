@@ -1,0 +1,134 @@
+import React, { useState, useEffect } from 'react';
+import PokeBallVisual from './PokeBallVisual';
+import { sound } from '../utils/audio';
+import gardevoirImg from '../assets/gardevoir.png';
+import gengarImg from '../assets/gengar.png';
+import pichuImg from '../assets/pichu.png';
+import { Sparkles, Heart } from 'lucide-react';
+
+interface OpeningSceneProps {
+  onStartOpening: () => void;
+  isOpening: boolean;
+}
+
+export default function OpeningScene({ onStartOpening, isOpening }: OpeningSceneProps) {
+  const [isIdleShaking, setIsIdleShaking] = useState(false);
+
+  // Periodic tiny shake every 4.5 seconds for idle life
+  useEffect(() => {
+    if (isOpening) return;
+    const interval = setInterval(() => {
+      setIsIdleShaking(true);
+      setTimeout(() => setIsIdleShaking(false), 900);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isOpening]);
+
+  const handleClick = () => {
+    if (isOpening) return;
+    sound.playClick();
+    onStartOpening();
+  };
+
+  return (
+    <div className="relative min-h-[90vh] flex flex-col items-center justify-between py-6 sm:py-10 px-4 w-full max-w-5xl mx-auto z-10">
+      {/* TOP HEADER: Large Centered "HAPPY BIRTHDAY" */}
+      <header className="text-center w-full flex flex-col items-center mt-2 sm:mt-4">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100/80 border border-pink-200 text-pink-700 text-xs sm:text-sm font-bold tracking-wider mb-2 shadow-xs backdrop-blur-xs">
+          <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+          <span>LUDS</span>
+          <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+        </div>
+
+        <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 drop-shadow-sm select-none">
+          HAPPY BIRTHDAY
+        </h1>
+        <p className="text-slate-600 text-sm sm:text-base font-medium mt-1">
+          A magical surprise is waiting inside the Poké Ball...
+        </p>
+      </header>
+
+      {/* CENTER: LARGE POKÉ BALL & CLICK ME BUTTON */}
+      <main className="flex-1 flex flex-col items-center justify-center my-6 sm:my-8 relative w-full">
+        {/* Glow halo behind Poké Ball */}
+        <div className="absolute w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-tr from-pink-300/30 to-amber-200/30 blur-2xl -z-10 animate-pulse-glow" />
+
+        {/* The Poké Ball */}
+        <div 
+          onClick={handleClick}
+          className="cursor-pointer transition-transform hover:scale-105 active:scale-95 duration-200 p-2"
+          role="button"
+          tabIndex={0}
+          aria-label="Interactive Poké Ball. Click to open your birthday surprise."
+          onKeyDown={(e) => e.key === 'Enter' && handleClick()}
+        >
+          <PokeBallVisual
+            size={window.innerWidth < 640 ? 190 : 250}
+            isShaking={isIdleShaking}
+            glowIntensity={1.2}
+          />
+        </div>
+
+        {/* CLICK ME Button */}
+        <div className="mt-8 flex flex-col items-center">
+          <button
+            id="open-pokeball-button"
+            onClick={handleClick}
+            disabled={isOpening}
+            className="group relative inline-flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-display font-bold text-lg sm:text-xl shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+            </span>
+            <span>CLICK ME</span>
+            <Heart className="w-5 h-5 fill-white text-white group-hover:scale-125 transition-transform" />
+          </button>
+          <span className="text-xs text-slate-600 mt-2 font-medium">
+            Tap the button or the Poké Ball to open!
+          </span>
+        </div>
+      </main>
+
+      {/* COMPANION DECORATIONS (Inspired by sa.png reference layout) */}
+      <footer className="w-full flex items-end justify-between px-2 sm:px-6 pointer-events-none select-none relative">
+        {/* Bottom Left: Pichu */}
+        <div className="flex items-end gap-2 transition-transform hover:scale-105 pointer-events-auto">
+          <div className="relative group">
+            <img
+              src={pichuImg}
+              alt="Cute Pichu"
+              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
+            />
+          </div>
+        </div>
+
+        {/* Center Hint Note */}
+        <div className="hidden md:flex flex-col items-center pb-2 text-xs font-semibold text-pink-700/80">
+          <span>✨ Happy Birthday Celebration ✨</span>
+        </div>
+
+        {/* Bottom Right: Gardevoir preview & Gengar snack corner */}
+        <div className="flex items-end gap-3 pointer-events-auto">
+          {/* Gengar snacking */}
+          <div className="relative group">
+            <img
+              src={gengarImg}
+              alt="Gengar snacking"
+              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
+            />
+          </div>
+
+          {/* Gardevoir smiling */}
+          <div className="relative group">
+            <img
+              src={gardevoirImg}
+              alt="Gardevoir smiling"
+              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
+            />
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
