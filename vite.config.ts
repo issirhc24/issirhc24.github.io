@@ -4,9 +4,10 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
-  return {
-    base: '/NYARK/',
-    plugins: [react(), tailwindcss()],
+
+return {
+  base: '/NYARK/',
+  plugins: [react(), tailwindcss()],
 
     resolve: {
       alias: {
