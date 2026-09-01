@@ -64,14 +64,7 @@ export default function App() {
     sound.setMuted(nextMuted);
   };
 
-  // First tap handler: unlocks Web Audio, plays click sound, then transitions
-  const handleStartOpening = async () => {
-    try {
-      await sound.unlock();
-      await sound.playClick();
-    } catch {
-      // safe fallback
-    }
+  const handleStartOpening = () => {
     setScene('catch_minigame');
   };
 

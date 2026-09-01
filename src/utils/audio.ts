@@ -24,11 +24,15 @@ class SoundEngine {
         this.ctx = new AudioCtx();
       }
 
-      if (this.ctx && this.ctx.state === 'suspended') {
+      if (this.ctx.state === 'suspended') {
         await this.ctx.resume();
       }
 
-      return this.ctx && this.ctx.state === 'running' ? this.ctx : this.ctx;
+      if (this.ctx.state !== 'running') {
+        return null;
+      }
+
+      return this.ctx;
     } catch (e) {
       console.warn('Web Audio ensureRunning error:', e);
       return null;
@@ -37,29 +41,48 @@ class SoundEngine {
 
   public async unlock(): Promise<void> {
     try {
-      const ctx = await this.ensureRunning();
-      if (!ctx) return;
+      if (typeof window === 'undefined') return;
 
-      if (ctx.state === 'suspended') {
-        await ctx.resume();
+      // 1. Create the AudioContext if it does not exist
+      if (!this.ctx) {
+        const AudioCtx = this.getAudioContextClass();
+        if (!AudioCtx) return;
+        this.ctx = new AudioCtx();
       }
 
-      // Play a 1-sample silent buffer to unlock iOS Safari Web Audio
-      const buffer = ctx.createBuffer(1, 1, 22050);
-      const source = ctx.createBufferSource();
+      // 2. Resume it if suspended
+      if (this.ctx.state === 'suspended') {
+        await this.ctx.resume();
+      }
+
+      // 3. Create a very short SILENT AudioBuffer: 1 channel, 1 sample, matching sample rate
+      const sampleRate = this.ctx.sampleRate || 44100;
+      const buffer = this.ctx.createBuffer(1, 1, sampleRate);
+
+      // 4. Create an AudioBufferSourceNode using that buffer
+      const source = this.ctx.createBufferSource();
       source.buffer = buffer;
-      source.connect(ctx.destination);
+
+      // 5. Connect it to the destination
+      source.connect(this.ctx.destination);
+
+      // 6. Start it immediately
       source.start(0);
 
-      // Short silent oscillator
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(0);
-      osc.stop(ctx.currentTime + 0.001);
+      // 7. Stop it immediately if needed
+      source.stop(this.ctx.currentTime + 0.001);
+
+      // 8. Await context.resume()
+      if (this.ctx.state === 'suspended') {
+        await this.ctx.resume();
+      }
+
+      // 9. Verify context.state is "running" before resolving
+      if (this.ctx.state !== 'running') {
+        await this.ctx.resume();
+      }
     } catch (e) {
+      // 10. Never throw an uncaught error
       console.warn('Web Audio unlock warning:', e);
     }
   }
