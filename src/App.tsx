@@ -2,7 +2,6 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AppScene } from './types';
 import BackgroundParticles from './components/BackgroundParticles';
 import OpeningScene from './components/OpeningScene';
-import { sound } from './utils/audio';
 
 // Reusable lazy-load functions for scenes
 const loadCatchMinigame = () => import('./components/CatchMinigame');
@@ -41,11 +40,9 @@ export default function App() {
   const [scene, setScene] = useState<AppScene>('opening');
   const [isMuted, setIsMuted] = useState(false);
 
-  // Progressive background prefetching for upcoming scene chunks
+  // Progressive background prefetching for upcoming scene chunks (NOT on opening)
   useEffect(() => {
-    if (scene === 'opening') {
-      loadCatchMinigame();
-    } else if (scene === 'catch_minigame') {
+    if (scene === 'catch_minigame') {
       loadPokeBallOpening();
     } else if (scene === 'pokeball_opening') {
       loadLetterScene();
@@ -58,13 +55,19 @@ export default function App() {
     }
   }, [scene]);
 
-  const handleToggleMute = () => {
+  const handleToggleMute = async () => {
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
-    sound.setMuted(nextMuted);
+    try {
+      const { sound } = await import('./utils/audio');
+      sound.setMuted(nextMuted);
+    } catch {
+      // safe fallback
+    }
   };
 
   const handleStartOpening = () => {
+    loadCatchMinigame();
     setScene('catch_minigame');
   };
 
@@ -78,6 +81,7 @@ export default function App() {
 
   const handleSurpriseClick = async () => {
     try {
+      const { sound } = await import('./utils/audio');
       await sound.playClick();
       // Ensure MegaEvolutionScene is ready before transition
       await loadMegaEvolutionScene();
@@ -91,20 +95,30 @@ export default function App() {
     setScene('celebration');
   };
 
-  const handleRestart = () => {
-    sound.playClick();
+  const handleRestart = async () => {
+    try {
+      const { sound } = await import('./utils/audio');
+      sound.playClick();
+    } catch {
+      // safe fallback
+    }
     setScene('opening');
   };
 
-  const handleReadLetterAgain = () => {
-    sound.playClick();
+  const handleReadLetterAgain = async () => {
+    try {
+      const { sound } = await import('./utils/audio');
+      sound.playClick();
+    } catch {
+      // safe fallback
+    }
     setScene('letter');
   };
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-x-hidden bg-[#fdf7f9]">
-      {/* AMBIENT BACKGROUND PARTICLES & GLOWS */}
-      <BackgroundParticles />
+      {/* AMBIENT BACKGROUND PARTICLES & GLOWS (only after leaving opening screen) */}
+      {scene !== 'opening' && <BackgroundParticles />}
 
       {/* SCENE RENDERING PIPELINE */}
       <div className="w-full relative z-10">

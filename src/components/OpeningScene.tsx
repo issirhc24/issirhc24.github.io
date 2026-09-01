@@ -1,11 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import PokeBallVisual from './PokeBallVisual';
-import { sound } from '../utils/audio';
-import { Sparkles, Heart } from 'lucide-react';
 
 interface OpeningSceneProps {
   onStartOpening: () => void | Promise<void>;
   isOpening: boolean;
+}
+
+// Lightweight inline SVG icons (0 external dependencies for fast initial load)
+function SparkleIcon({ className = 'w-4 h-4 text-amber-500' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+    </svg>
+  );
+}
+
+function HeartIcon({ className = 'w-5 h-5 text-white' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+    </svg>
+  );
 }
 
 export default function OpeningScene({ onStartOpening, isOpening }: OpeningSceneProps) {
@@ -24,6 +57,7 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
   const handleClick = async () => {
     if (isOpening) return;
     try {
+      const { sound } = await import('../utils/audio');
       await sound.unlock();
       await sound.playClick();
     } catch {
@@ -37,9 +71,9 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
       {/* TOP HEADER: Large Centered "HAPPY BIRTHDAY" */}
       <header className="text-center w-full flex flex-col items-center mt-2 sm:mt-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100/80 border border-pink-200 text-pink-700 text-xs sm:text-sm font-bold tracking-wider mb-2 shadow-xs backdrop-blur-xs">
-          <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+          <SparkleIcon className="w-4 h-4 text-amber-500 animate-spin" />
           <span>LUDS</span>
-          <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+          <SparkleIcon className="w-4 h-4 text-amber-500 animate-spin" />
         </div>
 
         <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 drop-shadow-sm select-none">
@@ -84,7 +118,7 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
               <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
             </span>
             <span>CLICK ME</span>
-            <Heart className="w-5 h-5 fill-white text-white group-hover:scale-125 transition-transform" />
+            <HeartIcon className="w-5 h-5 fill-white text-white group-hover:scale-125 transition-transform" />
           </button>
           <span className="text-xs text-slate-600 mt-2 font-medium">
             Tap the button or the Poké Ball to open!
@@ -95,9 +129,9 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
       {/* FOOTER */}
       <footer className="w-full flex items-center justify-center px-4 py-2 pointer-events-none select-none">
         <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 border border-pink-100 shadow-xs backdrop-blur-xs text-xs font-semibold text-pink-700/90">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <SparkleIcon className="w-3.5 h-3.5 text-amber-500" />
           <span>Tap to begin the adventure!</span>
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <SparkleIcon className="w-3.5 h-3.5 text-amber-500" />
         </div>
       </footer>
     </div>
