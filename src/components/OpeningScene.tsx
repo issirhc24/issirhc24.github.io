@@ -25,10 +25,10 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
     if (isOpening) return;
     try {
       await sound.unlock();
+      await sound.playClick();
     } catch {
       // safe fallback
     }
-    sound.playClick();
     onStartOpening();
   };
 

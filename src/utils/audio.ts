@@ -14,45 +14,40 @@ class SoundEngine {
     );
   }
 
-  private initCtx(): AudioContext | null {
+  private async ensureRunning(): Promise<AudioContext | null> {
     try {
+      if (typeof window === 'undefined') return null;
+
       if (!this.ctx) {
         const AudioCtx = this.getAudioContextClass();
-        if (AudioCtx) {
-          this.ctx = new AudioCtx();
-        }
+        if (!AudioCtx) return null;
+        this.ctx = new AudioCtx();
       }
+
       if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+        await this.ctx.resume();
       }
+
+      return this.ctx && this.ctx.state === 'running' ? this.ctx : this.ctx;
     } catch (e) {
-      console.warn('Web Audio initialization error:', e);
+      console.warn('Web Audio ensureRunning error:', e);
+      return null;
     }
-    return this.ctx;
   }
 
   public async unlock(): Promise<void> {
     try {
-      if (!this.ctx) {
-        const AudioCtx = this.getAudioContextClass();
-        if (AudioCtx) {
-          this.ctx = new AudioCtx();
-        }
-      }
-      if (!this.ctx) return;
-
-      if (this.ctx.state === 'suspended') {
-        await this.ctx.resume();
-      }
+      const ctx = await this.ensureRunning();
+      if (!ctx) return;
 
       // Short silent oscillator to satisfy iOS Safari user-gesture unlock requirements
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, ctx.currentTime);
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
       osc.start(0);
-      osc.stop(this.ctx.currentTime + 0.001);
+      osc.stop(ctx.currentTime + 0.001);
     } catch (e) {
       console.warn('Web Audio unlock warning:', e);
     }
@@ -71,74 +66,73 @@ class SoundEngine {
   }
 
   // Poké Ball Click
-  public playClick() {
+  public async playClick(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08);
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
 
-      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.08);
+      osc.stop(ctx.currentTime + 0.08);
     } catch (e) {
       console.warn('Audio playClick error:', e);
     }
   }
 
   // Poké Ball Wobble / Shake
-  public playWobble(pitch: number = 1) {
+  public async playWobble(pitch: number = 1): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'triangle';
       const baseFreq = 260 * pitch;
-      osc.frequency.setValueAtTime(baseFreq, this.ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(baseFreq + 60, this.ctx.currentTime + 0.1);
-      osc.frequency.linearRampToValueAtTime(baseFreq - 30, this.ctx.currentTime + 0.2);
-      osc.frequency.linearRampToValueAtTime(baseFreq + 40, this.ctx.currentTime + 0.3);
+      osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(baseFreq + 60, ctx.currentTime + 0.1);
+      osc.frequency.linearRampToValueAtTime(baseFreq - 30, ctx.currentTime + 0.2);
+      osc.frequency.linearRampToValueAtTime(baseFreq + 40, ctx.currentTime + 0.3);
 
-      gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.35);
+      osc.stop(ctx.currentTime + 0.35);
     } catch (e) {
       console.warn('Audio playWobble error:', e);
     }
   }
 
   // Poké Ball Open Light Burst
-  public playPokeballOpen() {
+  public async playPokeballOpen(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
       // Chime notes: C5, E5, G5, B5, C6
       const notes = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
       notes.forEach((freq, idx) => {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now + idx * 0.08);
 
@@ -147,7 +141,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.6);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(ctx.destination);
 
         osc.start(now + idx * 0.08);
         osc.stop(now + idx * 0.08 + 0.65);
@@ -158,50 +152,50 @@ class SoundEngine {
   }
 
   // Typewriter soft tap
-  public playTypewriterTap() {
+  public async playTypewriterTap(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
       const freqs = [1200, 1350, 1500, 1650];
       const chosen = freqs[Math.floor(Math.random() * freqs.length)];
-      osc.frequency.setValueAtTime(chosen, this.ctx.currentTime);
+      osc.frequency.setValueAtTime(chosen, ctx.currentTime);
 
-      gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.03);
+      gain.gain.setValueAtTime(0.03, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.03);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.start();
-      osc.stop(this.ctx.currentTime + 0.03);
+      osc.stop(ctx.currentTime + 0.03);
     } catch (e) {
       console.warn('Audio playTypewriterTap error:', e);
     }
   }
 
   // Mega Evolution Powerup & Climax
-  public playMegaEvolution() {
+  public async playMegaEvolution(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
       
       // Ascending cosmic sound
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(220, now);
       osc.frequency.exponentialRampToValueAtTime(1760, now + 1.8);
 
       // Lowpass filter for warm magic aura
-      const filter = this.ctx.createBiquadFilter();
+      const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(400, now);
       filter.frequency.exponentialRampToValueAtTime(4000, now + 1.8);
@@ -212,7 +206,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.start(now);
       osc.stop(now + 2.4);
@@ -220,9 +214,8 @@ class SoundEngine {
       // Climax chime chord
       const chord = [587.33, 739.99, 880, 1174.66, 1479.98];
       chord.forEach((freq) => {
-        if (!this.ctx) return;
-        const chOsc = this.ctx.createOscillator();
-        const chGain = this.ctx.createGain();
+        const chOsc = ctx.createOscillator();
+        const chGain = ctx.createGain();
         chOsc.type = 'sine';
         chOsc.frequency.setValueAtTime(freq, now + 1.8);
 
@@ -231,7 +224,7 @@ class SoundEngine {
         chGain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
 
         chOsc.connect(chGain);
-        chGain.connect(this.ctx.destination);
+        chGain.connect(ctx.destination);
 
         chOsc.start(now + 1.8);
         chOsc.stop(now + 3.2);
@@ -242,11 +235,11 @@ class SoundEngine {
   }
 
   // Joyful Music Box / 8-bit Happy Birthday melody
-  public playCelebrationMusic() {
+  public async playCelebrationMusic(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
       const melody: [number, number][] = [
         // [freq, duration in sec]
@@ -256,11 +249,10 @@ class SoundEngine {
         [466.16, 0.25], [466.16, 0.25], [440.00, 0.5], [349.23, 0.5], [392.00, 0.5], [349.23, 1.2]
       ];
 
-      let cursor = this.ctx.currentTime + 0.1;
+      let cursor = ctx.currentTime + 0.1;
       melody.forEach(([freq, dur]) => {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq * 2, cursor); // Music box octave
 
@@ -269,7 +261,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.0001, cursor + dur * 0.9);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(ctx.destination);
 
         osc.start(cursor);
         osc.stop(cursor + dur);
@@ -281,18 +273,17 @@ class SoundEngine {
   }
 
   // Sparkle chime
-  public playSparkle() {
+  public async playSparkle(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
       const freqs = [1046.5, 1318.51, 1567.98, 2093.0];
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
       freqs.forEach((f, i) => {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(f, now + i * 0.06);
 
@@ -300,7 +291,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.25);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(ctx.destination);
 
         osc.start(now + i * 0.06);
         osc.stop(now + i * 0.06 + 0.25);
@@ -311,16 +302,16 @@ class SoundEngine {
   }
 
   // Pokéball Throw whoosh
-  public playThrow() {
+  public async playThrow(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
       osc.frequency.setValueAtTime(300, now);
       osc.frequency.exponentialRampToValueAtTime(900, now + 0.15);
 
@@ -328,7 +319,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.start(now);
       osc.stop(now + 0.2);
@@ -338,37 +329,37 @@ class SoundEngine {
   }
 
   // Classic Pokémon Catch Click / Lock Sound (Mechanical snap)
-  public playCatchClick() {
+  public async playCatchClick(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
 
       // High mechanical click
-      const osc1 = this.ctx.createOscillator();
-      const gain1 = this.ctx.createGain();
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
       osc1.type = 'square';
       osc1.frequency.setValueAtTime(1400, now);
       osc1.frequency.exponentialRampToValueAtTime(700, now + 0.04);
       gain1.gain.setValueAtTime(0.2, now);
       gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
       osc1.connect(gain1);
-      gain1.connect(this.ctx.destination);
+      gain1.connect(ctx.destination);
       osc1.start(now);
       osc1.stop(now + 0.045);
 
       // Low solid latch
-      const osc2 = this.ctx.createOscillator();
-      const gain2 = this.ctx.createGain();
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
       osc2.type = 'triangle';
       osc2.frequency.setValueAtTime(320, now + 0.02);
       osc2.frequency.exponentialRampToValueAtTime(120, now + 0.07);
       gain2.gain.setValueAtTime(0.3, now + 0.02);
       gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
       osc2.connect(gain2);
-      gain2.connect(this.ctx.destination);
+      gain2.connect(ctx.destination);
       osc2.start(now + 0.02);
       osc2.stop(now + 0.08);
     } catch (e) {
@@ -377,13 +368,13 @@ class SoundEngine {
   }
 
   // Classic Pokémon Catch Victory Jingle (Ta-da-da-da-da-daaa!)
-  public playCatchFanfare() {
+  public async playCatchFanfare(): Promise<void> {
     if (this.isMuted) return;
     try {
-      this.initCtx();
-      if (!this.ctx) return;
+      const ctx = await this.ensureRunning();
+      if (!ctx || this.isMuted) return;
 
-      const now = this.ctx.currentTime;
+      const now = ctx.currentTime;
       // G5, G5, G5, C6 (classic victory chime: Da-da-da-DAAA!)
       const notes: [number, number, number][] = [
         [783.99, 0, 0.11],
@@ -393,9 +384,8 @@ class SoundEngine {
       ];
 
       notes.forEach(([freq, offset, dur]) => {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now + offset);
 
@@ -404,7 +394,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + dur);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(ctx.destination);
 
         osc.start(now + offset);
         osc.stop(now + offset + dur);
