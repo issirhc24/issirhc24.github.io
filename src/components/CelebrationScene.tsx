@@ -66,9 +66,9 @@ export default function CelebrationScene({
       
       {/* TOP BANNER / HEADLINES */}
       <header className="text-center w-full flex flex-col items-center select-none">
-        {/* REQUESTED TITLE: "ISANG POGI WISHES YOU A HAPPY BIRTHDAY!" */}
+        {/* REQUESTED TITLE: " HAPPY BIRTHDAY!" */}
         <h1 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 drop-shadow-sm leading-tight max-w-3xl">
-          ISANG POGI WISHES YOU <br className="hidden sm:inline" /> A HAPPY BIRTHDAY!
+          <br className="hidden sm:inline" />  HAPPY BIRTHDAY!
         </h1>
 
         {/* SUBHEADING: "Happy Birthday! ❤️" */}
