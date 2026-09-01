@@ -43,11 +43,13 @@ export default function BackgroundParticles() {
       <div className="absolute bottom-10 right-10 w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-purple-200/30 blur-3xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] sm:w-[600px] h-[450px] sm:h-[600px] rounded-full bg-amber-100/40 blur-3xl" />
 
-      {/* Floating particles */}
+      {/* Floating particles (10 on mobile <768px, 20 on desktop >=768px) */}
       {particles.map((p) => (
         <div
           key={p.id}
-          className="absolute select-none opacity-60 will-change-transform"
+          className={`absolute select-none opacity-60 will-change-transform ${
+            p.id >= 10 ? 'hidden md:block' : ''
+          }`}
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
