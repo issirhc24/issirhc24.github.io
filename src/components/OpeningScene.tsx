@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PokeBallVisual from './PokeBallVisual';
 import { sound } from '../utils/audio';
-import gardevoirImg from '../assets/gardevoir.png';
-import gengarImg from '../assets/gengar.png';
-import pichuImg from '../assets/pichu.png';
+import gardevoirImg from '../assets/gardevoir.webp';
+import gengarImg from '../assets/gengar.webp';
+import pichuImg from '../assets/pichu.webp';
 import { Sparkles, Heart } from 'lucide-react';
 
 interface OpeningSceneProps {

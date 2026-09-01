@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PokeBallVisual from './PokeBallVisual';
 import { sound } from '../utils/audio';
-import gardevoirImg from '../assets/gardevoir.png';
-import pichuImg from '../assets/pichu.png';
-import gengarImg from '../assets/gengar.png';
+import gardevoirImg from '../assets/gardevoir.webp';
+import pichuImg from '../assets/pichu.webp';
+import gengarImg from '../assets/gengar.webp';
 import confetti from 'canvas-confetti';
 import { Sparkles, Heart, Crosshair, ArrowRight, Star } from 'lucide-react';
 

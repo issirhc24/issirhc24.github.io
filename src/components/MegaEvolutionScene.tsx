@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import gardevoirImg from '../assets/gardevoir.png';
-import megaGardevoirImg from '../assets/mega-gardevoir.png';
+import gardevoirImg from '../assets/gardevoir.webp';
+import megaGardevoirImg from '../assets/mega-gardevoir.webp';
 import { sound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { Sparkles, Zap } from 'lucide-react';

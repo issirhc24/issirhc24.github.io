@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import gardevoirImg from '../assets/gardevoir.png';
-import gengarImg from '../assets/gengar.png';
-import pichuImg from '../assets/pichu.png';
+import gardevoirImg from '../assets/gardevoir.webp';
+import gengarImg from '../assets/gengar.webp';
+import pichuImg from '../assets/pichu.webp';
 import { sound } from '../utils/audio';
 import { Sparkles, Heart, FastForward } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface LetterSceneProps {
   onSurpriseClick: () => void;
 }
 
-const FULL_LETTER_TEXT = `Hey I don't normally write like this since it's out of my character but I just wanna say that you're the coolest person I know you're kind, pretty, and understanding Des sorry ngapala if sometimes ang cringe ko and I'm sorry for the flaws that I showed Ive learned from my mistakes I promise I want to be a better person for you, I know words doesn't prove anything right now so I'm hoping that you'd give me the chance to prove myself dikoden alam kung bat ganito ako pag kausap ka pero promise ibang iba ang ugali ko sa iba napaka natural ko like legit I'm trying my best na maging ganon den sayo yahahaha pero dikoden talaga alam, baka gawa lang siguro I've liked you for so long and I finally have the chance to talk to you and I don't wanna blew it kaya please pakisabihan ako pag you know, parang ewan nako so I can change, character development ganern🤣, btw everytime na nag nonotif pangalan mo saken I automatically smile at syempre and if dimo me trip ok lang Kase I just want you to be happy chinachat kita Kase I enjoy talking to you kaya sana wag Kang maging awkward sa mga chat ko kahit Ang kulit ko🤣 and if nakukulitan kana Sabihin molang🤣 ever since Nung nakita ko Yung vid mo Kay ma'am Joanna I've been mesmerized by your charm and after that I didn't look at anyone else's way but yours maganda, mabait, caring, and natotolerate yung ka kornihan ko kaya nga naging crush kita simula Nung g11 palang tayo eh I'm not rushing for your answers I just want to wish you a really happy birthday and enjoy your day!!Take care always!! I really wanna see you smile and if you're tired just know that I'm always here! Hoping to talk to you more and get to know you better :> HAPPY BIRTHDAY!! 🎈 🎂`;
+const FULL_LETTER_TEXT = `Hey I don't normally write like this since it's out of my character but I just wanna say that you're the coolest person I know you're kind, pretty, and understanding Des sorry ngapala if sometimes ang cringe ko and I'm sorry for the flaws that I showed Ive learned from my mistakes I promise I want to be a better person for you, I know words doesn't prove anything right now so I'm hoping that you'd give me the chance to prove myself dikoden alam kung bat ganito ako pag kausap ka pero promise ibang iba ang ugali ko sa iba napaka natural ko like legit I'm trying my best na maging ganon den sayo yahahaha pero dikoden talaga alam, baka gawa lang siguro I've liked you for so long and I finally have the chance to talk to you and I don't wanna blow it kaya please pakisabihan ako pag you know, parang ewan nako so I can change, character development ganern🤣, btw everytime na nag nonotif pangalan mo saken I automatically smile at syempre and if dimo me trip ok lang Kase I just want you to be happy chinachat kita Kase I enjoy talking to you kaya sana wag Kang maging awkward sa mga chat ko kahit Ang kulit ko🤣 and if nakukulitan kana Sabihin molang🤣 ever since Nung nakita ko Yung vid mo Kay ma'am Joanna I've been mesmerized by your charm and after that I didn't look at anyone else's way but yours maganda, mabait, caring, and natotolerate yung ka kornihan ko kaya nga naging crush kita simula Nung g11 palang tayo eh I'm not rushing for your answers I just want to wish you a really happy birthday and enjoy your day!!Take care always!! I really wanna see you smile and if you're tired just know that I'm always here! Hoping to talk to you more and get to know you better :> HAPPY BIRTHDAY!! 🎈 🎂`;
 
 export default function LetterScene({ onSurpriseClick }: LetterSceneProps) {
   const [displayedText, setDisplayedText] = useState('');
@@ -202,7 +202,7 @@ export default function LetterScene({ onSurpriseClick }: LetterSceneProps) {
       <div className="flex md:hidden items-center justify-around w-full mt-6 select-none">
         <div className="flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-full border border-amber-100 shadow-xs">
           <img src={pichuImg} alt="Pichu" className="w-9 h-9 object-contain" />
-          <span className="text-xs font-bold text-amber-800">Pikachu 🎉</span>
+          <span className="text-xs font-bold text-amber-800">Pichu 🎉</span>
         </div>
         <div className="flex items-center gap-2 bg-white/80 px-3 py-1.5 rounded-full border border-purple-100 shadow-xs">
           <img src={gengarImg} alt="Gengar" className="w-9 h-9 object-contain" />

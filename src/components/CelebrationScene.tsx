@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import megaGardevoirImg from '../assets/mega-gardevoir.png';
-import gengarImg from '../assets/gengar.png';
-import pichuImg from '../assets/pichu.png';
+import megaGardevoirImg from '../assets/mega-gardevoir.webp';
+import gengarImg from '../assets/gengar.webp';
+import pichuImg from '../assets/pichu.webp';
 import { sound } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import { Sparkles, Heart, RotateCcw, FileText } from 'lucide-react';
