@@ -127,7 +127,7 @@ export default function CelebrationScene({
         <div className="flex sm:hidden items-center justify-around w-full mt-4 select-none">
           <div className="flex items-center gap-2 bg-white/90 px-3 py-1 rounded-full border border-amber-100 shadow-xs">
             <img src={pichuImg} alt="Pichu" className="w-8 h-8 object-contain" />
-            <span className="text-[11px] font-bold text-amber-800">Pikachu 🎉</span>
+            <span className="text-[11px] font-bold text-amber-800">Pichu🎉</span>
           </div>
           <div className="flex items-center gap-2 bg-white/90 px-3 py-1 rounded-full border border-purple-100 shadow-xs">
             <img src={gengarImg} alt="Gengar" className="w-8 h-8 object-contain" />
