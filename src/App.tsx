@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AppScene } from './types';
 import BackgroundParticles from './components/BackgroundParticles';
 import OpeningScene from './components/OpeningScene';
@@ -7,23 +7,10 @@ import LetterScene from './components/LetterScene';
 import MegaEvolutionScene from './components/MegaEvolutionScene';
 import CelebrationScene from './components/CelebrationScene';
 import { sound } from './utils/audio';
-import gardevoirImg from './assets/gardevoir.png';
-import megaGardevoirImg from './assets/mega-gardevoir.png';
-import gengarImg from './assets/gengar.png';
-import pichuImg from './assets/pichu.png';
 
 export default function App() {
   const [scene, setScene] = useState<AppScene>('opening');
   const [isMuted, setIsMuted] = useState(false);
-
-  // Preload all Pokémon images on mount
-  useEffect(() => {
-    const imagesToPreload = [gardevoirImg, megaGardevoirImg, gengarImg, pichuImg];
-    imagesToPreload.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
 
   const handleToggleMute = () => {
     const nextMuted = !isMuted;
