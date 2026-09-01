@@ -240,6 +240,98 @@ class SoundEngine {
       osc.stop(now + i * 0.06 + 0.25);
     });
   }
+
+  // Pokéball Throw whoosh
+  public playThrow() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    const now = this.ctx.currentTime;
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.exponentialRampToValueAtTime(900, now + 0.15);
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.2);
+  }
+
+  // Classic Pokémon Catch Click / Lock Sound (Mechanical snap)
+  public playCatchClick() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+
+    // High mechanical click
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(1400, now);
+    osc1.frequency.exponentialRampToValueAtTime(700, now + 0.04);
+    gain1.gain.setValueAtTime(0.2, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.045);
+
+    // Low solid latch
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(320, now + 0.02);
+    osc2.frequency.exponentialRampToValueAtTime(120, now + 0.07);
+    gain2.gain.setValueAtTime(0.3, now + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(now + 0.02);
+    osc2.stop(now + 0.08);
+  }
+
+  // Classic Pokémon Catch Victory Jingle (Ta-da-da-da-da-daaa!)
+  public playCatchFanfare() {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    // G5, G5, G5, C6 (classic victory chime: Da-da-da-DAAA!)
+    const notes: [number, number, number][] = [
+      [783.99, 0, 0.11],
+      [783.99, 0.13, 0.11],
+      [783.99, 0.26, 0.11],
+      [1046.50, 0.42, 0.65],
+    ];
+
+    notes.forEach(([freq, offset, dur]) => {
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + offset);
+
+      gain.gain.setValueAtTime(0.001, now + offset);
+      gain.gain.linearRampToValueAtTime(0.22, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + dur);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now + offset);
+      osc.stop(now + offset + dur);
+    });
+  }
 }
 
 export const sound = new SoundEngine();

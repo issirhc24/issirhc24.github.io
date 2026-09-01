@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppScene } from './types';
 import BackgroundParticles from './components/BackgroundParticles';
 import OpeningScene from './components/OpeningScene';
+import CatchMinigame from './components/CatchMinigame';
 import PokeBallOpening from './components/PokeBallOpening';
 import LetterScene from './components/LetterScene';
 import MegaEvolutionScene from './components/MegaEvolutionScene';
@@ -19,6 +20,10 @@ export default function App() {
   };
 
   const handleStartOpening = () => {
+    setScene('catch_minigame');
+  };
+
+  const handleCatchComplete = () => {
     setScene('pokeball_opening');
   };
 
@@ -51,7 +56,7 @@ export default function App() {
 
       {/* SCENE RENDERING PIPELINE */}
       <div className="w-full relative z-10">
-        {/* 1. OPENING SCENE (Inspired by sa.png) */}
+        {/* 1. OPENING SCENE */}
         {scene === 'opening' && (
           <OpeningScene
             onStartOpening={handleStartOpening}
@@ -59,22 +64,27 @@ export default function App() {
           />
         )}
 
-        {/* 2. POKÉ BALL OPENING SEQUENCE */}
+        {/* 2. CATCH MINIGAME (Tap to catch before opening) */}
+        {scene === 'catch_minigame' && (
+          <CatchMinigame onComplete={handleCatchComplete} />
+        )}
+
+        {/* 3. POKÉ BALL OPENING SEQUENCE */}
         {scene === 'pokeball_opening' && (
           <PokeBallOpening onComplete={handleOpeningFinished} />
         )}
 
-        {/* 3. BIRTHDAY LETTER SCENE (Inspired by 2.png) */}
+        {/* 4. BIRTHDAY LETTER SCENE */}
         {scene === 'letter' && (
           <LetterScene onSurpriseClick={handleSurpriseClick} />
         )}
 
-        {/* 4. MEGA EVOLUTION SEQUENCE */}
+        {/* 5. MEGA EVOLUTION SEQUENCE */}
         {scene === 'mega_evolution' && (
           <MegaEvolutionScene onEvolutionComplete={handleEvolutionComplete} />
         )}
 
-        {/* 5. GRAND BIRTHDAY CELEBRATION */}
+        {/* 6. GRAND BIRTHDAY CELEBRATION */}
         {scene === 'celebration' && (
           <CelebrationScene
             onRestart={handleRestart}
