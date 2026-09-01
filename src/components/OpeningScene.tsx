@@ -21,8 +21,13 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
     return () => clearInterval(interval);
   }, [isOpening]);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (isOpening) return;
+    try {
+      await sound.unlock();
+    } catch {
+      // safe fallback
+    }
     sound.playClick();
     onStartOpening();
   };
