@@ -244,7 +244,7 @@ export default function CatchMinigame({ onComplete }: CatchMinigameProps) {
               }`}
             >
               <PokeBallVisual
-                size={window.innerWidth < 640 ? 160 : 190}
+                className="w-[160px] h-[160px] sm:w-[190px] sm:h-[190px]"
                 isShaking={false}
                 glowIntensity={phase === 'caught' ? 2.2 : isWobbling ? 1.6 : 1}
               />

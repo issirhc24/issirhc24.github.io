@@ -1,5 +1,6 @@
 interface PokeBallVisualProps {
   size?: number;
+  className?: string;
   isOpen?: boolean;
   openProgress?: number; // 0 to 1
   isShaking?: boolean;
@@ -7,7 +8,8 @@ interface PokeBallVisualProps {
 }
 
 export default function PokeBallVisual({
-  size = 220,
+  size,
+  className = '',
   isOpen = false,
   openProgress = 0,
   isShaking = false,
@@ -22,20 +24,17 @@ export default function PokeBallVisual({
     <div
       className={`relative select-none flex items-center justify-center transition-transform ${
         isShaking ? 'animate-poke-shake-violent' : 'animate-float-bob'
-      }`}
+      } ${className}`}
       style={{
-        width: `${size}px`,
-        height: `${size}px`,
+        ...(size ? { width: `${size}px`, height: `${size}px` } : {}),
         filter: `drop-shadow(0 15px 30px rgba(244, 63, 94, ${0.25 * glowIntensity})) drop-shadow(0 0 ${20 * glowIntensity}px rgba(251, 113, 133, ${0.4 * glowIntensity}))`,
       }}
     >
       {/* Radiant inner light core when opening */}
       {isOpen && (
         <div
-          className="absolute z-10 rounded-full pointer-events-none transition-all duration-300"
+          className="absolute z-10 rounded-full pointer-events-none transition-all duration-300 w-4/5 h-4/5"
           style={{
-            width: `${size * 0.8}px`,
-            height: `${size * 0.8}px`,
             background: 'radial-gradient(circle, #ffffff 0%, #fbcfe8 45%, #ec4899 75%, transparent 100%)',
             transform: `scale(${1 + openProgress * 1.8})`,
             opacity: Math.min(1, openProgress * 1.5),
@@ -46,8 +45,6 @@ export default function PokeBallVisual({
 
       {/* SVG Poké Ball for crisp render */}
       <svg
-        width={size}
-        height={size}
         viewBox="0 0 200 200"
         className="w-full h-full overflow-visible"
       >

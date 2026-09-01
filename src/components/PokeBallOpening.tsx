@@ -99,7 +99,7 @@ export default function PokeBallOpening({ onComplete }: PokeBallOpeningProps) {
       {/* The Central Opening Poké Ball */}
       <div className="relative z-10 flex flex-col items-center">
         <PokeBallVisual
-          size={window.innerWidth < 640 ? 220 : 280}
+          className="w-[220px] h-[220px] sm:w-[280px] sm:h-[280px]"
           isShaking={phase === 'shake'}
           isOpen={phase === 'open' || phase === 'burst' || phase === 'fade'}
           openProgress={openProgress}

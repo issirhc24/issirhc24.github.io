@@ -60,7 +60,7 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
           onKeyDown={(e) => e.key === 'Enter' && handleClick()}
         >
           <PokeBallVisual
-            size={window.innerWidth < 640 ? 190 : 250}
+            className="w-[190px] h-[190px] sm:w-[250px] sm:h-[250px]"
             isShaking={isIdleShaking}
             glowIntensity={1.2}
           />
