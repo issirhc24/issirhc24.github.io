@@ -31,14 +31,10 @@ export default function App() {
 
   const handleOpeningFinished = () => {
     setScene('letter');
-    // Preload Mega Evolution in the background while user reads letter
-    import('./components/MegaEvolutionScene');
   };
 
   const handleSurpriseClick = () => {
     setScene('mega_evolution');
-    // Preload Celebration scene in background while Mega Evolution plays
-    import('./components/CelebrationScene');
   };
 
   const handleEvolutionComplete = () => {

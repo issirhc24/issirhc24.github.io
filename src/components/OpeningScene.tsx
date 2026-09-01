@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PokeBallVisual from './PokeBallVisual';
 import { sound } from '../utils/audio';
-import gardevoirImg from '../assets/gardevoir.webp';
-import gengarImg from '../assets/gengar.webp';
-import pichuImg from '../assets/pichu.webp';
 import { Sparkles, Heart } from 'lucide-react';
 
 interface OpeningSceneProps {
@@ -90,43 +87,12 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
         </div>
       </main>
 
-      {/* COMPANION DECORATIONS (Inspired by sa.png reference layout) */}
-      <footer className="w-full flex items-end justify-between px-2 sm:px-6 pointer-events-none select-none relative">
-        {/* Bottom Left: Pichu */}
-        <div className="flex items-end gap-2 transition-transform hover:scale-105 pointer-events-auto">
-          <div className="relative group">
-            <img
-              src={pichuImg}
-              alt="Cute Pichu"
-              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
-            />
-          </div>
-        </div>
-
-        {/* Center Hint Note */}
-        <div className="hidden md:flex flex-col items-center pb-2 text-xs font-semibold text-pink-700/80">
-          <span>✨ Happy Birthday Celebration ✨</span>
-        </div>
-
-        {/* Bottom Right: Gardevoir preview & Gengar snack corner */}
-        <div className="flex items-end gap-3 pointer-events-auto">
-          {/* Gengar snacking */}
-          <div className="relative group">
-            <img
-              src={gengarImg}
-              alt="Gengar snacking"
-              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
-            />
-          </div>
-
-          {/* Gardevoir smiling */}
-          <div className="relative group">
-            <img
-              src={gardevoirImg}
-              alt="Gardevoir smiling"
-              className="w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg"
-            />
-          </div>
+      {/* FOOTER */}
+      <footer className="w-full flex items-center justify-center px-4 py-2 pointer-events-none select-none">
+        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 border border-pink-100 shadow-xs backdrop-blur-xs text-xs font-semibold text-pink-700/90">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>Tap to begin the adventure!</span>
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
         </div>
       </footer>
     </div>
