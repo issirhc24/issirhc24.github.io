@@ -4,7 +4,7 @@ import { sound } from '../utils/audio';
 import { Sparkles, Heart } from 'lucide-react';
 
 interface OpeningSceneProps {
-  onStartOpening: () => void;
+  onStartOpening: () => void | Promise<void>;
   isOpening: boolean;
 }
 
@@ -29,7 +29,7 @@ export default function OpeningScene({ onStartOpening, isOpening }: OpeningScene
     } catch {
       // safe fallback
     }
-    onStartOpening();
+    await onStartOpening();
   };
 
   return (

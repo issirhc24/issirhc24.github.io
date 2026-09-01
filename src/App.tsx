@@ -1,19 +1,62 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AppScene } from './types';
 import BackgroundParticles from './components/BackgroundParticles';
 import OpeningScene from './components/OpeningScene';
 import { sound } from './utils/audio';
 
-// Lazy load subsequent scenes to optimize initial load speed
-const CatchMinigame = lazy(() => import('./components/CatchMinigame'));
-const PokeBallOpening = lazy(() => import('./components/PokeBallOpening'));
-const LetterScene = lazy(() => import('./components/LetterScene'));
-const MegaEvolutionScene = lazy(() => import('./components/MegaEvolutionScene'));
-const CelebrationScene = lazy(() => import('./components/CelebrationScene'));
+// Reusable lazy-load functions for scenes
+const loadCatchMinigame = () => import('./components/CatchMinigame');
+const loadPokeBallOpening = () => import('./components/PokeBallOpening');
+const loadLetterScene = () => import('./components/LetterScene');
+const loadMegaEvolutionScene = () => import('./components/MegaEvolutionScene');
+const loadCelebrationScene = () => import('./components/CelebrationScene');
+
+// Lazy-loaded components using reusable loader functions
+const CatchMinigame = lazy(loadCatchMinigame);
+const PokeBallOpening = lazy(loadPokeBallOpening);
+const LetterScene = lazy(loadLetterScene);
+const MegaEvolutionScene = lazy(loadMegaEvolutionScene);
+const CelebrationScene = lazy(loadCelebrationScene);
+
+// Aesthetic Suspense fallback matching the birthday theme
+function SceneSuspenseFallback() {
+  return (
+    <div className="min-h-[85vh] w-full flex flex-col items-center justify-center p-6 text-center select-none">
+      <div className="relative flex items-center justify-center mb-5">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-pink-400 via-rose-300 to-purple-400 animate-spin blur-xs opacity-75" />
+        <div className="absolute w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-md border border-pink-100">
+          <span className="text-xl animate-bounce">✨</span>
+        </div>
+      </div>
+      <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 border border-pink-200/80 shadow-xs backdrop-blur-xs">
+        <span className="text-pink-600 font-bold text-sm sm:text-base tracking-wide animate-pulse">
+          ✨ Preparing your surprise...
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [scene, setScene] = useState<AppScene>('opening');
   const [isMuted, setIsMuted] = useState(false);
+
+  // Progressive background prefetching for upcoming scene chunks
+  useEffect(() => {
+    if (scene === 'opening') {
+      loadCatchMinigame();
+    } else if (scene === 'catch_minigame') {
+      loadPokeBallOpening();
+    } else if (scene === 'pokeball_opening') {
+      loadLetterScene();
+    } else if (scene === 'letter') {
+      // Prefetch MegaEvolutionScene and CelebrationScene in background while reading letter
+      loadMegaEvolutionScene();
+      loadCelebrationScene();
+    } else if (scene === 'mega_evolution') {
+      loadCelebrationScene();
+    }
+  }, [scene]);
 
   const handleToggleMute = () => {
     const nextMuted = !isMuted;
@@ -21,7 +64,14 @@ export default function App() {
     sound.setMuted(nextMuted);
   };
 
-  const handleStartOpening = () => {
+  // First tap handler: unlocks Web Audio, plays click sound, then transitions
+  const handleStartOpening = async () => {
+    try {
+      await sound.unlock();
+      await sound.playClick();
+    } catch {
+      // safe fallback
+    }
     setScene('catch_minigame');
   };
 
@@ -33,7 +83,14 @@ export default function App() {
     setScene('letter');
   };
 
-  const handleSurpriseClick = () => {
+  const handleSurpriseClick = async () => {
+    try {
+      await sound.playClick();
+      // Ensure MegaEvolutionScene is ready before transition
+      await loadMegaEvolutionScene();
+    } catch {
+      // safe fallback
+    }
     setScene('mega_evolution');
   };
 
@@ -58,7 +115,7 @@ export default function App() {
 
       {/* SCENE RENDERING PIPELINE */}
       <div className="w-full relative z-10">
-        <Suspense fallback={<div className="min-h-[90vh] w-full" />}>
+        <Suspense fallback={<SceneSuspenseFallback />}>
           {/* 1. OPENING SCENE */}
           {scene === 'opening' && (
             <OpeningScene

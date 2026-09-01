@@ -40,7 +40,18 @@ class SoundEngine {
       const ctx = await this.ensureRunning();
       if (!ctx) return;
 
-      // Short silent oscillator to satisfy iOS Safari user-gesture unlock requirements
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
+      // Play a 1-sample silent buffer to unlock iOS Safari Web Audio
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+
+      // Short silent oscillator
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0, ctx.currentTime);

@@ -18,8 +18,12 @@ export default function LetterScene({ onSurpriseClick }: LetterSceneProps) {
   const [typingSpeed] = useState<number>(26); // ms per char
   const textEndRef = useRef<HTMLDivElement>(null);
 
-  // Gardevoir cute blink interval
+  // Gardevoir cute blink interval & background prefetch
   useEffect(() => {
+    // Prefetch upcoming scenes quietly in the background while user reads the letter
+    import('./MegaEvolutionScene').catch(() => {});
+    import('./CelebrationScene').catch(() => {});
+
     const blinkInterval = setInterval(() => {
       setIsBlinkingEye(true);
       setTimeout(() => setIsBlinkingEye(false), 200);
